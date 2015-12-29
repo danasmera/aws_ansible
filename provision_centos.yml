@@ -1,0 +1,95 @@
+---
+- name: Stage instance(s)
+  hosts: local
+  connection: local
+  gather_facts: false
+
+  vars:
+      keyname: yourkeyname
+      instance_type: t2.micro
+      security_group: default
+      image_id: "{{ imageid }}"
+      region: us-east-1
+      vpc_subnet_id: yoursubnetid
+      assign_public_ip: yes
+      tag_name: yourtag
+  # Launch x instances with the following parameters.  Register the output.
+
+  tasks:
+    - name: Launch instance 
+      ec2:
+        group: "{{security_group}}"
+        instance_type: "{{instance_type}}"
+        image: "{{image_id}}"
+        region: "{{region}}"
+        key_name: "{{keyname}}"
+        vpc_subnet_id: "{{vpc_subnet_id}}"
+        wait: true
+        private_ip: "{{ private_ip }}"
+        count: 1
+        instance_tags:
+          Name: "{{ tag_name }}"
+      register: ec2
+    
+    # Use with_items to add each instances public IP to a new hostgroup for use in the next play.
+
+    - name: Add new instances to host group
+      add_host: hostname={{item.public_ip}} groups={{tag_name}}
+      with_items: ec2.instances
+
+    - name: Add entry to /etc/hosts
+      lineinfile: dest=/etc/hosts line="{{ item.public_ip }} server1"
+      with_items:
+        - "{{ ec2.instances }}"
+      ignore_errors: true
+
+    - name: Wait for the instances to boot by checking the ssh port
+      wait_for: host={{item.public_ip}} port=22 delay=30 timeout=360 state=started
+      with_items: ec2.instances
+    
+ 
+# This play targets the new host group
+- name: Configure instance
+  hosts: "{{ tag_name }}"
+  user: cloud-user
+  sudo: yes
+  vars:
+    tag_name: yourtag
+  # Do some stuff on each instance ....
+
+  tasks:
+    - name: Add users
+      user: name={{ item.name }} state=present comment="{{ item.comment }}" uid={{ item.uid }} shell=/bin/bash
+      with_items:
+        - { name: 'daniel', comment: 'Daniel T.', uid: 600 }
+      tags:
+        - adduser
+
+    - name: Add user keys
+      authorized_key: user=daniel
+                  key="{{ lookup('file', '/home/daniel/.ssh/id_rsa.pub') }}"
+      tags:
+        - adduser
+
+    - name: Copy sudoers file
+      copy: src=sudoers.centos dest=/etc/sudoers backup=yes
+      tags:
+        - copyfile
+
+    - name: Install packages
+      yum: pkg={{ item }} state=latest
+      with_items:
+        - vim-enhanced
+        - ntp
+        - python-setuptools
+        - jq
+        - telnet
+        - elinks
+        - lynx
+      tags:
+        - installpkg
+    - name: Start ntpd on boot
+      service: name=ntpd state=started enabled=yes
+
+    - name: Install pip
+      easy_install: name=pip
