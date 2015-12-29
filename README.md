@@ -8,7 +8,7 @@ Update keyname, instance type, security group, AMI id, VPC subnet id, tag name i
 Shell wrapper to provision EC2 instance
 -----------------------------
 
-By default, the provision script will launch a tier 2 Ubuntu micro instance.
+By default, the provision script will launch a tier 2 Ubuntu micro instance. Script will add hostname 'server1' to /etc/hosts on provisioning server.
 
 
   $ sudo ./provision-ec2.sh -h
