@@ -72,7 +72,7 @@ else
   exit 1
 fi
 ##vars
-PRIVKEY='rhce.pem'
+PRIVKEY='aws.pem'
 
 export imageid="$IMAGEID"
 export private_ip="$IPADDRESS"
