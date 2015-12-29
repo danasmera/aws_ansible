@@ -1,13 +1,15 @@
 # aws_ansible
 Provision and configure AWS instances with Ansible.
 
-Requirements - a VPC, VPC subnet ID, Boto - Python library for AWS, Ansible, AWS credentials.
+Requirements - a VPC, VPC subnet ID, Boto - Python library for AWS, Ansible, AWS credentials, ec2.py for pulling dynamic inventory from AWS.
 
 Shell wrapper to provision EC2 instance
 -----------------------------
 
   $ sudo ./provision-ec2.sh -h
+
   This help output.
+
   Usage: provision-ec2.sh -o LINUX_DISTRO_NAME[rhel|ubuntu] -i IPADDRESS
 
 
