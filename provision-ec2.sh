@@ -68,7 +68,6 @@ if [ "$response" = 'Y' -o "$response" = 'YES' ]; then
   echo "Provisioning in progress .... "
 elif [ "$response" = 'U' -o "$response" = 'UPDATE' ]; then
   updateinput
-  echo $IPADDRESS 
 else
   echo "Interrupted provisioning."
   exit 1
