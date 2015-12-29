@@ -1,0 +1,47 @@
+---
+# This play targets the new host group
+- name: Configure instance
+  hosts: all
+  user: ubuntu
+  sudo: yes
+  # Do some stuff on each instance ....
+
+  tasks:
+    - name: Add to IP to /etc/hosts on remote server
+      lineinfile: dest=/etc/hosts line="{{ansible_eth0["ipv4"]["address"]}} {{ansible_hostname}}"
+
+    - name: Add EDITOR environment variable
+      lineinfile: dest=/etc/profile line='export EDITOR=vim'
+
+    - name: Add users
+      user: name={{ item.name }} state=present uid={{ item.uid }} shell=/bin/bash
+      with_items:
+        - { name: 'daniel', uid: 600 }
+      tags:
+        - adduser
+
+    - name: Add user keys
+      authorized_key: user=daniel
+                  key="{{ lookup('file', '/home/daniel/.ssh/id_rsa.pub') }}"
+      tags:
+        - adduser
+
+    - name: Copy sudoers file
+      copy: src=sudoers dest=/etc/sudoers backup=yes
+      tags:
+        - copyfile
+    - name: update apt cache
+      apt: update_cache=yes
+
+    - name: Install packages
+      apt: pkg={{ item }} state=latest
+      with_items:
+        - vim
+        - ntp
+        - python-setuptools
+        - jq
+        - telnet
+        - git
+        - lynx
+      tags:
+        - installpkg
