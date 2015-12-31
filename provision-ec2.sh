@@ -20,7 +20,7 @@ if [ "$ARGCOUNT" -eq 0 ]; then
   IMAGEID=${IMAGEID-"ami-d05e75b8"}
   MYUSER=${MYUSER-"ubuntu"}
   IPADDRESS=${MANPATH-"192.168.2.9"}
-  MYPLAYBOOK='breakme_ubuntu.yml'
+  MYPLAYBOOK='provision_ubuntu.yml'
   SKIP=1
   else
   IPADDRESS=${MANPATH-"192.168.2.9"}
@@ -51,9 +51,9 @@ if [ "$SKIP" -ne 1 ]; then
 fi
 ## If RHEL, let us set set the image ID and user name
 echo "$MYDISTRO" | grep -q -i -P '(\s+)?(rhel|redhat)(\s+)?$' 
-[[ $? -eq 0 ]] && { IMAGEID='ami-90248af8' ; MYUSER='cloud-user'; MYPLAYBOOK='breakme_rhel.yml' ; }
+[[ $? -eq 0 ]] && { IMAGEID='ami-90248af8' ; MYUSER='cloud-user'; MYPLAYBOOK='provision_centos.yml' ; }
 echo "$MYDISTRO" | grep -q -i -P '(\s+)?(ubuntu)(\s+)?$'
-[[ $? -eq 0 ]] && { IMAGEID='ami-d05e75b8' ; MYUSER='ubuntu' ; MYPLAYBOOK='breakme_ubuntu.yml' ;}
+[[ $? -eq 0 ]] && { IMAGEID='ami-d05e75b8' ; MYUSER='ubuntu' ; MYPLAYBOOK='provision_ubuntu.yml' ;}
 ## Provision
 echo "We will provision an EC2 with the following specification."
 echo "Linux Distro: $MYDISTRO"
