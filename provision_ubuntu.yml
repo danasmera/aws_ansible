@@ -13,7 +13,7 @@
       assign_public_ip: yes
       tag_name: yourtag
       image_id: "{{ imageid }}"
-  # Launch x instances with the following parameters.  Register the output.
+  #Launch 'count' number of Ubuntu instances with the following parameters. Register the output.
 
   tasks:
     - name: Launch instance 

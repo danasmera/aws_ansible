@@ -13,7 +13,7 @@
       vpc_subnet_id: yoursubnetid
       assign_public_ip: yes
       tag_name: yourtag
-  # Launch x instances with the following parameters.  Register the output.
+  #Launch count number of CentOS instances with the following parameters. Register the output.
 
   tasks:
     - name: Launch instance 
